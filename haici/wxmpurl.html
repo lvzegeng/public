@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>跳转小程序</title>
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+            .box {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -0624104850%);
+                min-height: 100px;
+            }
+            #msg {
+                padding: 20px;
+                text-align: center;
+            }
+            #reload {
+                border: none;
+                border-radius: 4px;
+                font-size: 14px;
+                color: #fff;
+                background: #07c160;
+                padding: 6px 10px;
+                margin: auto;
+                cursor: pointer;
+                display: none;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="box">
+            <div id="msg">loading...</div>
+            <button id="reload" onclick="fetchWxaurl({retry:true})">点击刷新</button>
+        </div>
+        <script>
+            let retryTime = 0
+            const STATUS = {
+                LOADING: 0, // 加载
+                ERROR: 1, // 请求出错
+                REPEATED_ERROR: 2, // 请求多次出错
+            }
+
+            const box = document.querySelector('.box')
+            const msg = document.querySelector('#msg')
+            const reloadBtn = document.querySelector('#reload')
+
+            function fetchWxaurl({ retry } = {}) {
+                if (retryTime >= 3) return
+                if (retry) retryTime += 1
+                handleStatus(STATUS.LOADING)
+                fetch('https://udaojia.hoswork.com/api/open/miniprogram/generateUrlLink', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        path: '/pages/tabbar/hisindex/index',
+                        query: 'appId=10002',
+                        subSource: 2,
+                    }),
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        const { data = {}, code } = res || {}
+                        if (code === 0 && data.errcode === 0 && data.urlLink) {
+                            window.location = data.urlLink
+                        } else {
+                            handleError()
+                        }
+                    })
+                    .catch(e => {
+                        handleError()
+                    })
+            }
+
+            function handleStatus(status) {
+                switch (status) {
+                    case STATUS.LOADING:
+                        msg.innerHTML = 'loading...'
+                        reloadBtn.style.display = 'none'
+                        break
+                    case STATUS.ERROR:
+                        msg.innerHTML = '加载异常，请点击刷新重试'
+                        reloadBtn.style.display = 'block'
+                        break
+                    case STATUS.REPEATED_ERROR:
+                        msg.innerHTML = '加载异常，请使用微信扫码打开小程序'
+                        reloadBtn.style.display = 'none'
+                }
+            }
+            function handleError() {
+                if (retryTime < 3) {
+                    handleStatus(STATUS.ERROR)
+                } else {
+                    // 点击刷新3次，接口仍报错，则提示扫码
+                    handleStatus(STATUS.REPEATED_ERROR)
+                    const img = document.createElement('img')
+                    img.src = 'https://tse4-mm.cn.bing.net/th/id/OIP-C.4EJKO_GajxqhDaUo1AOL3gAAAA?w=167&h=180&c=7&r=0&o=5&pid=1.7'
+                    box.appendChild(img)
+                }
+            }
+
+            fetchWxaurl()
+        </script>
+    </body>
+</html>

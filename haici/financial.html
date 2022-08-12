@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .form, .row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 20px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+        }
+
+        .diff {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+<div class="form">
+    <input type="number">
+    <input type="number">
+    <input type="number">
+    <button type="submit" class="submitBtn">提交</button>
+</div>
+<div class="data">
+    <div class="row">
+        <div>支</div>
+        <div>微</div>
+        <div>招</div>
+    </div>
+</div>
+
+
+</body>
+
+<script>
+    function getDatas (){
+        return JSON.parse( localStorage.getItem('test') ?? '[]')
+    }
+    function setDatas (datas){
+        localStorage.setItem('test', JSON.stringify(datas))
+    }
+
+    const datas = getDatas()
+    const dataEle = document.querySelector('.data')
+
+    const createRow = (data, className) => {
+        const containerEle = document.createElement('div')
+        containerEle.classList.add('row', className)
+
+        data.forEach(item => {
+            const ele = document.createElement('div')
+            ele.textContent = item
+            containerEle.appendChild(ele)
+        })
+
+        return containerEle
+
+    }
+
+    for (let i = 0; i < datas.length; i++) {
+        const item = datas[i]
+        dataEle.appendChild(createRow(item))
+
+        if (i < datas.length - 1) {
+
+            const arr = new Array(item.length).fill('').map((i, index) => {
+                return item[index] - datas[i + 1][index]
+            })
+            console.log({arr})
+            dataEle.appendChild(createRow(arr, 'diff'))
+        }
+    }
+
+
+    document.querySelector('.submitBtn').addEventListener('click', ()=>{
+       const inputEles = document.querySelectorAll('input')
+        const values = [...inputEles].map(item=> Number(item.value))
+
+        const datas = getDatas()
+        datas.unshift(values)
+        setDatas(datas)
+
+        location.reload()
+
+    })
+
+</script>
+</html>

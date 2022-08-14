@@ -72,11 +72,9 @@
         dataEle.appendChild(createRow(item))
 
         if (i < datas.length - 1) {
-
-            const arr = new Array(item.length).fill('').map((i, index) => {
+            const arr = new Array(item.length).fill('').map((a, index) => {
                 return item[index] - datas[i + 1][index]
             })
-            console.log({arr})
             dataEle.appendChild(createRow(arr, 'diff'))
         }
     }

@@ -36,6 +36,7 @@
         <div>支</div>
         <div>微</div>
         <div>招</div>
+        <div>总</div>
     </div>
 </div>
 
@@ -57,14 +58,15 @@
         const containerEle = document.createElement('div')
         containerEle.classList.add('row', className)
 
-        data.forEach(item => {
+        const total = data.reduce((previousValue, currentValue)=> previousValue + currentValue, 0);
+
+        [...data, total].forEach(item => {
             const ele = document.createElement('div')
             ele.textContent = item
             containerEle.appendChild(ele)
         })
 
         return containerEle
-
     }
 
     for (let i = 0; i < datas.length; i++) {

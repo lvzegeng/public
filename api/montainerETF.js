@@ -1,7 +1,5 @@
 import {createClient} from 'redis';
 
-const redis = await createClient({url: 'redis://default:MylebOpXPVqERMbZkqbUaUrVlAcVWPn1@redis-17191.c15.us-east-1-4.ec2.redns.redis-cloud.com:17191'}).connect();
-
 // 监控的ETF列表 (腾讯证券API格式: sh.ETF代码)
 const etfList = ["sh513500", "sh513650", "sz159655"];
 // 溢价阈值
@@ -94,6 +92,8 @@ const sendMessage = async (text) => {
 
 
 export default async (req, res) => {
+    const redis = await createClient({url: 'redis://default:MylebOpXPVqERMbZkqbUaUrVlAcVWPn1@redis-17191.c15.us-east-1-4.ec2.redns.redis-cloud.com:17191'}).connect();
+
     const redisValue = await redis.get('key') || '[]';
     let localData = JSON.parse(redisValue)
 
@@ -102,6 +102,9 @@ export default async (req, res) => {
     const day = currentDate.getDay();
     if (hour < 9 || hour >= 15 || day === 0 || day === 6) {
         console.log("不在开盘时间");
+        res.statusCode = 200
+        res.setHeader('Content-Type', 'application/json')
+        res.end('ok')
         return;
     }
 

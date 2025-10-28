@@ -8,7 +8,7 @@ const sendMessage = async (text) => {
         },
         body: JSON.stringify({
             "msgtype": "text",
-            "text": {"content": `达到${text}`}
+            "text": {"content": `达到\n${text}`}
         })
     })
 }

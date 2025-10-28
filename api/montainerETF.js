@@ -59,8 +59,16 @@ export default async (req, res) => {
 
             const message = alerts
                 .map(
-                    ({etf1, etf2, difference}) =>
-                        `${etf1.name}、${etf2.name}溢价差 ${difference}`,
+                    ({etf1, etf2, difference}) =>{
+                        let maxEtf = etf1
+                        let minEtf = etf2
+                        if(etf1.premium < etf2.premium){
+                            maxEtf = etf2
+                            minEtf = etf1
+                        }
+                        return `${maxEtf.name} - ${minEtf.name} 的溢价差为 ${maxEtf.premium}-${minEtf.premium}=${difference}`
+                    }
+
                 )
                 .join("\n");
             await sendMessage(message)

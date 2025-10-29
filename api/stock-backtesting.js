@@ -2,9 +2,9 @@ import sendMessage from '../utils/sendMessage.js'
 import fetchETFData from '../utils/fetchETFData.js'
 
 // 监控的ETF列表 (腾讯证券API格式: sh.ETF代码)
-const etfList = ["sh512890", "sh513500", "sh513650", "sz159655", "sh518880"];
+const etfList = ["sh512890", "usSPY", "sh518880"];
 // 回测阈值，百分位数
-const threshold = 5;
+const threshold = 6;
 
 
 export default async (req, res) => {
